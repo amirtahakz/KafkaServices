@@ -1,6 +1,6 @@
-using KafkaServices.Api.Consumers.Handlers;
-using KafkaServices.Api.Consumers.Models;
-using KafkaServices.Kafka;
+//using KafkaServices.Api.Consumers.Handlers;
+//using KafkaServices.Api.Consumers.Models;
+//using KafkaServices.Kafka;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
