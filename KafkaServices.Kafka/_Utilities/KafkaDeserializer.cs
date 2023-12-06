@@ -1,27 +1,39 @@
 using System;
+using System.Buffers.Text;
 using System.Text;
 using Confluent.Kafka;
 using Newtonsoft.Json;
 
 namespace KafkaServices.Kafka._Utilities
 {
-    internal sealed class KafkaDeserializer<T> : IDeserializer<T>
+    internal sealed class KafkaDeserializer<TValue> : IDeserializer<TValue>
     {
-        public T Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
+        public TValue Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
         {
-            if (typeof(T) == typeof(Null))
+
+            if (typeof(TValue) == typeof(Null))
             {
                 if (data.Length > 0)
                     throw new ArgumentException("The data is null not null.");
                 return default;
             }
 
-            if (typeof(T) == typeof(Ignore))
+            if (typeof(TValue) == null)
+            {
+                if (data.Length > 0)
+                    throw new ArgumentException("The data is null not null.");
+                return default;
+            }
+
+            if (typeof(TValue) == typeof(Ignore))
                 return default;
 
             var dataJson = Encoding.UTF8.GetString(data);
 
-            return JsonConvert.DeserializeObject<T>(dataJson);
+            if (typeof(TValue) == typeof(string))
+                return (dynamic)dataJson;
+
+            return JsonConvert.DeserializeObject<TValue>(dataJson);
         }
     }
 }

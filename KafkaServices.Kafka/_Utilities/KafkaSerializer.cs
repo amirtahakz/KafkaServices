@@ -5,14 +5,14 @@ using Newtonsoft.Json;
 
 namespace KafkaServices.Kafka._Utilities
 {
-    internal sealed class KafkaSerializer<T> : ISerializer<T>
+    internal sealed class KafkaSerializer<TValue> : ISerializer<TValue>
     {
-        public byte[] Serialize(T data, SerializationContext context)
+        public byte[] Serialize(TValue data, SerializationContext context)
         {
-            if (typeof(T) == typeof(Null))
+            if (typeof(TValue) == typeof(Null))
                 return null;
 
-            if (typeof(T) == typeof(Ignore))
+            if (typeof(TValue) == typeof(Ignore))
                 throw new NotSupportedException("Not Supported.");
 
             var json = JsonConvert.SerializeObject(data);
