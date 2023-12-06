@@ -14,14 +14,14 @@ namespace KafkaServices.Kafka._Utilities
             if (typeof(TValue) == typeof(Null))
             {
                 if (data.Length > 0)
-                    throw new ArgumentException("The data is null not null.");
+                    throw new ArgumentException("Data Is Null");
                 return default;
             }
 
             if (typeof(TValue) == null)
             {
                 if (data.Length > 0)
-                    throw new ArgumentException("The data is null not null.");
+                    throw new ArgumentException("Data Is Null");
                 return default;
             }
 
