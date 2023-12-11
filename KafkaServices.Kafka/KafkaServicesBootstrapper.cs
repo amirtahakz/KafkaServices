@@ -1,11 +1,11 @@
-using System;
-using KafkaServices.Kafka.Consumer;
-using KafkaServices.Kafka.Producer;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
-using KafkaServices.Kafka.Producer.Configs;
+using KafkaServices.Kafka.Producer;
 using KafkaServices.Kafka.Consumer.Configs;
+using KafkaServices.Kafka.Producer.Configs;
+using KafkaServices.Kafka.Consumer;
+using System;
 using KafkaServices.Kafka._Utilities;
 
 namespace KafkaServices.Kafka
@@ -18,7 +18,7 @@ namespace KafkaServices.Kafka
         public static IServiceCollection AddKafkaConsumer<TKey, TValue, THandler>(this IServiceCollection services,
             Action<KafkaConsumerConfig<TKey, TValue>> configAction) where THandler : class, IKafkaHandler<TKey, TValue>
         {
-            services.AddScoped<IKafkaHandler<TKey, TValue>, THandler>();
+            services.AddSingleton<IKafkaHandler<TKey, TValue>, THandler>();
 
             services.AddHostedService<BackGroundKafkaConsumer<TKey, TValue>>();
 
@@ -30,7 +30,7 @@ namespace KafkaServices.Kafka
         public static IServiceCollection AddKafkaProducer<TKey, TValue>(this IServiceCollection services,
             Action<KafkaProducerConfig<TKey, TValue>> configAction)
         {
-            services.AddConfluenTKeyafkaProducer<TKey, TValue>();
+            services.AddConfluentKafkaProducer<TKey, TValue>();
 
             services.AddSingleton<KafkaProducer<TKey, TValue>>();
 
@@ -39,7 +39,7 @@ namespace KafkaServices.Kafka
             return services;
         }
 
-        private static IServiceCollection AddConfluenTKeyafkaProducer<TKey, TValue>(this IServiceCollection services)
+        private static IServiceCollection AddConfluentKafkaProducer<TKey, TValue>(this IServiceCollection services)
         {
             services.AddSingleton(
                 sp =>

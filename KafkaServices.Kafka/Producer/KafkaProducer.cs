@@ -19,7 +19,7 @@ namespace KafkaServices.Kafka.Producer
             _producer = producer;
         }
 
-        public async Task ProduceAsync(TKey key, TValue value , Headers headers = default)
+        public async Task ProduceAsync(TKey key, TValue value, Headers headers = default)
         {
             var message = new Message<TKey, TValue>
             {

@@ -28,6 +28,7 @@ namespace KafkaServices.Kafka._Utilities
             if (typeof(TValue) == typeof(Ignore))
                 return default;
 
+
             var dataJson = Encoding.UTF8.GetString(data);
 
             if (typeof(TValue) == typeof(string))
