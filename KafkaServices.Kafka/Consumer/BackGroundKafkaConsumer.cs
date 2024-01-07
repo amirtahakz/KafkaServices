@@ -4,6 +4,7 @@ using KafkaServices.Kafka.Consumer.Configs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,26 +31,57 @@ namespace KafkaServices.Kafka.Consumer
                 {
                     _handler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<TKey, TValue>>();
 
-                    var builder = new ConsumerBuilder<TKey, TValue>(_config).SetValueDeserializer(new KafkaDeserializer<TValue>());
-
-                    using (IConsumer<TKey, TValue> consumer = builder.Build())
+                    if (_config.IsMessagePack)
                     {
-                        consumer.Subscribe(_config.Topic);
+                        var builder = new ConsumerBuilder<TKey, byte[]>(_config);
 
-                        while (!stoppingToken.IsCancellationRequested)
+                        using (IConsumer<TKey, byte[]> consumer = builder.Build())
                         {
-                            var result = consumer.Consume(stoppingToken);
+                            consumer.Subscribe(_config.Topic);
 
-                            if (result != null)
+                            while (!stoppingToken.IsCancellationRequested)
                             {
-                                await _handler.HandleAsync(result.Message.Key, result.Message.Value);
+                                var data = consumer.Consume(stoppingToken);
 
-                                consumer.Commit(result);
+                                if (data != null)
+                                {
 
-                                consumer.StoreOffset(result);
+                                    var result = ExtentionMessagePack.Deserialize<TValue>(data.Message.Value);
+
+                                    await _handler.HandleAsync(data.Message.Key, result);
+
+                                    consumer.Commit(data);
+
+                                    consumer.StoreOffset(data);
+                                }
                             }
                         }
                     }
+                    else
+                    {
+                        var builder = new ConsumerBuilder<TKey, TValue>(_config).SetValueDeserializer(new KafkaDeserializer<TValue>());
+
+                        using (IConsumer<TKey, TValue> consumer = builder.Build())
+                        {
+                            consumer.Subscribe(_config.Topic);
+
+                            while (!stoppingToken.IsCancellationRequested)
+                            {
+                                var result = consumer.Consume(stoppingToken);
+
+                                if (result != null)
+                                {
+                                    await _handler.HandleAsync(result.Message.Key, result.Message.Value);
+
+                                    consumer.Commit(result);
+
+                                    consumer.StoreOffset(result);
+                                }
+                            }
+                        }
+                    }
+
+                    
                 }
             });
 

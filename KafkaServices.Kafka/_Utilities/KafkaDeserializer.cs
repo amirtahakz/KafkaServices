@@ -37,4 +37,5 @@ namespace KafkaServices.Kafka._Utilities
             return JsonConvert.DeserializeObject<TValue>(dataJson);
         }
     }
+
 }
