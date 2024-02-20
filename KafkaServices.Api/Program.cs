@@ -2,6 +2,9 @@
 //using KafkaServices.Api.Consumers.Models;
 //using KafkaServices.Kafka;
 
+using KafkaServices.Api.Consumers.Models;
+using KafkaServices.Kafka;
+
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
@@ -12,11 +15,11 @@ var services = builder.Services;
 
 //services.AddKafkaMessageBus();
 
-//services.AddKafkaProducer<string, User>(p =>
-//{
-//    p.Topic = "users";
-//    p.BootstrapServers = "localhost:9092";
-//});
+services.AddKafkaProducer<string, User>(p =>
+{
+    p.Topic = "users";
+    p.BootstrapServers = "localhost:9092";
+});
 
 #endregion
 

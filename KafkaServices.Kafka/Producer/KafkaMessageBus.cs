@@ -12,7 +12,7 @@ namespace KafkaServices.Kafka.Producer
         }
         public async Task PublishAsync(TKey key, TValue message, Headers headers = default)
         {
-            await _producer.ProduceAsync(key, message);
+            await _producer.ProduceAsync(key, message , headers);
         }
     }
 }
